@@ -103,7 +103,20 @@ class RestTest {
         String responseBody = response.body().asString();
         LOGGER.log(Level.INFO, responseBody);
         assertNotNull(responseBody);
+    }
 
+    @Test
+    void basicAuth(){
+        RestAssured
+                .given()
+                .port(9099)
+                .auth().basic("AmberTeam", "AmberPassword")
 
+                .when()
+                .get("api/security/servers")
+
+                .then()
+                .statusCode(200).assertThat()
+                .log().all();
     }
 }
