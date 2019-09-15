@@ -22,7 +22,7 @@ class RestTest {
     void isGrzesiekOnMemberList() {
         RestAssured
                 .given()
-                .port(8080)
+                .port(9099)
 
                 .when()
                 .get("/api/members")
@@ -34,7 +34,7 @@ class RestTest {
 
     @Test
     void isGrzesiekHasTaeCertificate() {
-        RestAssured.port = 8080;
+        RestAssured.port = 9099;
         Response response = RestAssured.given().get("/api/members");
         ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Grzesiek\"}.certificates");
         assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
@@ -54,7 +54,7 @@ class RestTest {
     void isKonradPythonLiker() {
         RestAssured
                 .given()
-                .port(8080)
+                .port(9099)
 
                 .when()
                 .get("api/member/1")
@@ -69,7 +69,7 @@ class RestTest {
     void isKonradKnowUiPath() {
         RestAssured
                 .given()
-                .port(8080)
+                .port(9099)
 
                 .when()
                 .log().all()
@@ -92,7 +92,7 @@ class RestTest {
                 .config(RestAssured.config()
                         .encoderConfig(encoderConfig()
                                 .encodeContentTypeAs("application/json;charset=utf-8", ContentType.TEXT)))
-                .port(8080)
+                .port(9099)
                 .header("content-type", "application/json;charset=utf-8")
                 .log().all()
 
