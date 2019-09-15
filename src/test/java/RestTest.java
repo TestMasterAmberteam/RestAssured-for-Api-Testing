@@ -19,7 +19,7 @@ class RestTest {
     private static final Logger LOGGER = Logger.getLogger(RestTest.class.getName());
 
     @Test
-    void isGrzesiekOnMemberList() {
+    void isFranekOnMemberList() {
         RestAssured
                 .given()
                 .port(9099)
@@ -29,19 +29,19 @@ class RestTest {
 
                 .then()
                 .statusCode(200)
-                .body("name", hasItem("Grzesiek"));
+                .body("name", hasItem("Franek"));
     }
 
     @Test
-    void isGrzesiekHasTaeCertificate() {
+    void isFranekHasTaeCertificate() {
         RestAssured.port = 9099;
         Response response = RestAssured.given().get("/api/members");
-        ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Grzesiek\"}.certificates");
+        ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Franek\"}.certificates");
         assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
     }
 
     @Test
-    void hasKonradThreeAndHalfYearsOfExpierience() {
+    void hasStaszekThreeAndHalfYearsOfExpierience() {
         Response response = RestAssured.given().port(8080).get("api/member/1");
         JsonPath jsonPath = response.jsonPath();
         LOGGER.log(Level.INFO, jsonPath.prettify());
@@ -51,7 +51,7 @@ class RestTest {
 
 
     @Test
-    void isKonradPythonLiker() {
+    void isStaszekPythonLiker() {
         RestAssured
                 .given()
                 .port(9099)
@@ -66,7 +66,7 @@ class RestTest {
     }
 
     @Test
-    void isKonradKnowUiPath() {
+    void isStaszekKnowUiPath() {
         RestAssured
                 .given()
                 .port(9099)
