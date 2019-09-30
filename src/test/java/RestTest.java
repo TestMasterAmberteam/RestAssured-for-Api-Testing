@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ class RestTest {
         RestAssured
                 .given()
                 .port(9099)
+                .log().headers()
 
                 .when()
                 .get("/api/members")
@@ -42,10 +45,10 @@ class RestTest {
 
     @Test
     void hasStaszekThreeAndHalfYearsOfExpierience() {
-        Response response = RestAssured.given().port(8080).get("api/member/1");
+        Response response = RestAssured.given().port(9099).get("api/member/1");
         JsonPath jsonPath = response.jsonPath();
         LOGGER.log(Level.INFO, jsonPath.prettify());
-        assertEquals(3.5F, jsonPath.get("yearsOfExperience"));
+        assertEquals("3.5", jsonPath.get("yearsOfExperience").toString());
 
     }
 
@@ -117,6 +120,29 @@ class RestTest {
 
                 .then()
                 .statusCode(200).assertThat()
+                .log().all();
+    }
+
+    @Test
+    void hashMapInBody() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("price", 2100);
+        map.put("trainerName", "Staszek");
+        map.put("trainingName", "Rest Assured");
+
+        RestAssured.port = 9099;
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+
+                .when()
+                .body(map)
+                .log().all()
+                .post("api/training")
+
+
+                .then()
+                .statusCode(201).assertThat()
                 .log().all();
     }
 }
