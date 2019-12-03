@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>AmberTeam</groupId>
-    <artifactId>LuczniczQA</artifactId>
+    <artifactId>RestAssured-for-API-testing</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
