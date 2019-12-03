@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 class RestTest {
     private static final Logger LOGGER = Logger.getLogger(RestTest.class.getName());
 
@@ -31,14 +30,20 @@ class RestTest {
                 .get("/api/members")
 
                 .then()
-                .statusCode(200)
+                .statusCode(200).assertThat()
                 .body("name", hasItem("Franek"));
     }
 
     @Test
     void isFranekHasTaeCertificate() {
         RestAssured.port = 9099;
-        Response response = RestAssured.given().get("/api/members");
+        Response response = RestAssured
+                .get("/api/members")
+                .then()
+                .statusCode(200).assertThat()
+
+                .extract().response();
+//        System.out.println(response.toString());
         ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Franek\"}.certificates");
         assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
     }
@@ -58,14 +63,15 @@ class RestTest {
         RestAssured
                 .given()
                 .port(9099)
-
+                .log().all()
                 .when()
                 .get("api/member/1")
 
                 .then()
                 .log().all()
                 .statusCode(200)
-                .body("programmingLanguages", hasItem("Python"));
+                .body("programmingLanguages", hasItem("Python"))
+                .assertThat();
     }
 
     @Test
@@ -109,7 +115,7 @@ class RestTest {
     }
 
     @Test
-    void basicAuth(){
+    void basicAuth() {
         RestAssured
                 .given()
                 .port(9099)
@@ -137,12 +143,13 @@ class RestTest {
 
                 .when()
                 .body(map)
-                .log().all()
+//                .log().body()
+                .log().uri().log().ifValidationFails().log().method()
                 .post("api/training")
 
 
                 .then()
                 .statusCode(201).assertThat()
-                .log().all();
+        ;
     }
 }
