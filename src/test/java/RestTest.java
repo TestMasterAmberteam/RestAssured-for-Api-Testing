@@ -4,152 +4,134 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static io.restassured.config.EncoderConfig.encoderConfig;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class RestTest {
     private static final Logger LOGGER = Logger.getLogger(RestTest.class.getName());
+    private static final String API_URI = "/api/rest/v1";
 
     @Test
-    void isFranekOnMemberList() {
+    void getTrainingsList() {
         RestAssured
                 .given()
-                .port(9099)
+                .port(9999)
                 .log().headers()
 
                 .when()
-                .get("/api/members")
+                .get(API_URI + "/trainings/all")
 
                 .then()
-                .statusCode(200).assertThat()
-                .body("name", hasItem("Franek"));
+                .statusCode(200).assertThat();
     }
 
     @Test
-    void isFranekHasTaeCertificate() {
-        RestAssured.port = 9099;
-        Response response = RestAssured
-                .get("/api/members")
-                .then()
-                .statusCode(200).assertThat()
+    void isAkademiaVATOnTrainingList() {
+        RestAssured
+                .given()
+                .port(9999)
 
-                .extract().response();
-//        System.out.println(response.toString());
-        ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Franek\"}.certificates");
-        assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
+                .when()
+                .get(API_URI + "/trainings/all")
+
+                .then().log().all()
+                .statusCode(200).assertThat()
+                .body("name", hasItem("AKADEMIA VAT – PO KOMPLEKSOWEJ NOWELIZACJI USTAWY KURS 4-DNIOWY"));
     }
 
     @Test
-    void hasStaszekThreeAndHalfYearsOfExpierience() {
-        Response response = RestAssured.given().port(9099).get("api/member/1");
+    void isBbeMaxParticipansEqualThirty() {
+        Response response = RestAssured.given().port(9999).get("http://localhost:9999/api/rest/v1/training/3");
         JsonPath jsonPath = response.jsonPath();
         LOGGER.log(Level.INFO, jsonPath.prettify());
-        assertEquals("3.5", jsonPath.get("yearsOfExperience").toString());
-
-    }
-
-
-    @Test
-    void isStaszekPythonLiker() {
-        RestAssured
-                .given()
-                .port(9099)
-                .log().all()
-                .when()
-                .get("api/member/1")
-
-                .then()
-                .log().all()
-                .statusCode(200)
-                .body("programmingLanguages", hasItem("Python"))
-                .assertThat();
-    }
-
-    @Test
-    void isStaszekKnowUiPath() {
-        RestAssured
-                .given()
-                .port(9099)
-
-                .when()
-                .log().all()
-                .get("api/member/1")
-
-                .then()
-                .statusCode(200)
-                .body("knownTechnologies", hasItems("UIPath", "JMeter"));
+        assertEquals(30, jsonPath.getInt("maxParticipants"));
     }
 
     @Test
     void isItPossibleToAddTraining() {
         String payload = "{\n" +
-                "  \"price\": 2500,\n" +
-                "  \"trainerName\": \"Janek\",\n" +
-                "  \"trainingName\": \"ISTQB Certified Agile Tester Extension\"\n" +
+                "  \"name\": \"KraQA\",\n" +
+                "  \"price\": 0,\n" +
+                "  \"trainer\": \"grześ\",\n" +
+                "  \"maxParticipants\": 200,\n" +
+                "  \"place\":\"Kraków\"\n" +
                 "}";
+
         Response response = RestAssured
                 .given()
-                .config(RestAssured.config()
-                        .encoderConfig(encoderConfig()
-                                .encodeContentTypeAs("application/json;charset=utf-8", ContentType.TEXT)))
-                .port(9099)
+                .port(9999)
                 .header("content-type", "application/json;charset=utf-8")
                 .log().all()
 
                 .when()
                 .body(payload)
-                .post("api/training");
+                .post(API_URI + "/training");
         assertEquals(201, response.getStatusCode());
-        String responseBody = response.body().asString();
+        String responseBody = response.body().toString();
         LOGGER.log(Level.INFO, responseBody);
         assertNotNull(responseBody);
     }
 
     @Test
-    void basicAuth() {
-        RestAssured
-                .given()
-                .port(9099)
-                .auth().basic("AmberTeam", "AmberPassword")
-
-                .when()
-                .get("api/security/servers")
-
-                .then()
-                .statusCode(200).assertThat()
-                .log().all();
-    }
-
-    @Test
-    void hashMapInBody() {
+    void hasMapInBody() {
         Map<String, Object> map = new HashMap<>();
-        map.put("price", 2100);
-        map.put("trainerName", "Staszek");
-        map.put("trainingName", "Rest Assured");
+        map.put("name", "Rest Assured w służbie testów API");
+        map.put("price", 0);
+        map.put("trainer", "Grześ Ha i Lukasz B");
+        map.put("maxParticipants", 20);
+        map.put("place", "ConSelenium v3");
 
-        RestAssured.port = 9099;
+        RestAssured.port = 9999;
         RestAssured
                 .given()
                 .contentType(ContentType.JSON)
 
                 .when()
                 .body(map)
-//                .log().body()
+                .log().body()
                 .log().uri().log().ifValidationFails().log().method()
-                .post("api/training")
+                .post(API_URI + "/training")
 
-
-                .then()
-                .statusCode(201).assertThat()
-        ;
+                .then().log().body()
+                .statusCode(201).assertThat();
     }
+
+
+//
+
+
+//    @Test
+//    void isFranekHasTaeCertificate() {
+//        RestAssured.port = 9099;
+//        Response response = RestAssured
+//                .get("/api/members")
+//                .then()
+//                .statusCode(200).assertThat()
+//
+//                .extract().response();
+//        ArrayList<String> grzesieksCertificates = response.path("find {it.name==\"Franek\"}.certificates");
+//        assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
+//    }
+
+//    @Test
+//    void basicAuth() {
+//        RestAssured
+//                .given()
+//                .port(9099)
+//                .auth().basic("AmberTeam", "AmberPassword")
+//
+//                .when()
+//                .get("api/security/servers")
+//
+//                .then()
+//                .statusCode(200).assertThat()
+//                .log().all();
+//    }
+
 }
