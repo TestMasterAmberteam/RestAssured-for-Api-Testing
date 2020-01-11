@@ -47,7 +47,7 @@ class RestTest {
 
     @Test
     void isBbeMaxParticipansEqualThirty() {
-        Response response = RestAssured.given().port(9999).get("http://localhost:9999/api/rest/v1/training/3");
+        Response response = RestAssured.given().port(9999).get(API_URI + "/training/3");
         JsonPath jsonPath = response.jsonPath();
         LOGGER.log(Level.INFO, jsonPath.prettify());
         assertEquals(30, jsonPath.getInt("maxParticipants"));
@@ -73,7 +73,7 @@ class RestTest {
                 .body(payload)
                 .post(API_URI + "/training");
         assertEquals(201, response.getStatusCode());
-        String responseBody = response.body().toString();
+        String responseBody = response.body().prettyPrint();
         LOGGER.log(Level.INFO, responseBody);
         assertNotNull(responseBody);
     }
