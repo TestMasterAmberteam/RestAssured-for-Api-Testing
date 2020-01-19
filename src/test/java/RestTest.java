@@ -102,7 +102,20 @@ class RestTest {
                 .statusCode(201).assertThat();
     }
 
+    @Test
+    void basicAuth() {
+        RestAssured
+                .given()
+                .port(9999)
+                .auth().basic("AmberTeam", "AmberPassword")
 
+                .when()
+                .get("api/rest/security/people/all")
+
+                .then()
+                .statusCode(200).assertThat()
+                .log().all();
+    }
 //
 
 
@@ -119,19 +132,5 @@ class RestTest {
 //        assert (grzesieksCertificates.contains("ISTQB CTAL TAE"));
 //    }
 
-//    @Test
-//    void basicAuth() {
-//        RestAssured
-//                .given()
-//                .port(9099)
-//                .auth().basic("AmberTeam", "AmberPassword")
-//
-//                .when()
-//                .get("api/security/servers")
-//
-//                .then()
-//                .statusCode(200).assertThat()
-//                .log().all();
-//    }
 
 }
