@@ -63,6 +63,7 @@ class RestTest {
                 "  \"place\":\"Kraków\"\n" +
                 "}";
 
+
         Response response = RestAssured
                 .given()
                 .port(9999)
@@ -87,6 +88,8 @@ class RestTest {
         map.put("maxParticipants", 20);
         map.put("place", "ConSelenium v3");
 
+        TrainingModel training = new TrainingModel();
+        training.setMaxParticipants(20).setName("Szkolenie").setPlace("warszawa").setPrice(100).setTrainer("grześ");
         RestAssured.port = 9999;
         RestAssured
                 .given()
@@ -101,6 +104,25 @@ class RestTest {
                 .then().log().body()
                 .statusCode(201).assertThat();
     }
+    @Test
+    void pojoInBody(){
+        TrainingModel training = new TrainingModel();
+        training.setMaxParticipants(20).setName("Szkolenie").setPlace("warszawa").setPrice(100).setTrainer("grześ");
+        RestAssured.port = 9999;
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+
+                .when()
+                .body(training)
+                .log().body()
+                .log().uri().log().ifValidationFails().log().method()
+                .post(API_URI + "/training")
+
+                .then().log().body()
+                .statusCode(201).assertThat();
+    }
+
 
     @Test
     void basicAuth() {
