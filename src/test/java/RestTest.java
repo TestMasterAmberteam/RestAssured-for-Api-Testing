@@ -17,6 +17,8 @@ class RestTest {
     private static final Logger LOGGER = Logger.getLogger(RestTest.class.getName());
     private static final String API_URI = "/api/rest/v1";
 
+
+
     @Test
     void getTrainingsList() {
         RestAssured
@@ -88,8 +90,6 @@ class RestTest {
         map.put("maxParticipants", 20);
         map.put("place", "ConSelenium v3");
 
-        TrainingModel training = new TrainingModel();
-        training.setMaxParticipants(20).setName("Szkolenie").setPlace("warszawa").setPrice(100).setTrainer("grześ");
         RestAssured.port = 9999;
         RestAssured
                 .given()
